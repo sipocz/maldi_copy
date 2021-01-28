@@ -103,7 +103,7 @@ def msg(msgstr="",tofile=True):
             print("\t\t" +caller+"-"+msgstr)
 
 
-def listinfiles(directory):
+def listfiles(directory):
     '''
     directory könyvtár elemeit listázza
     :return: listába rendezett fálnevek
