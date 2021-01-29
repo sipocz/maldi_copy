@@ -19,7 +19,7 @@ _Logdirectory="/log"
 _BackupIN=_Backupdirectory+_Indirectory
 _BackupOUT=_Backupdirectory+_Outdirectory
 _Backupresult=_Backupdirectory+_Resultdirectory
-
+_MaldiInput="c:/Maldi_Input"
 
 _DebugToFile=True
 _logprefix = _Basedirectory+_Logdirectory
@@ -34,11 +34,11 @@ _BUD_prefix="BUD"
 
 
 
-'''
+
 _DOR_Source_Path="\\\\hungary\\dfsroot\\Maldi_eredmenyek\\Dorog kezi\\"
 _DEB_Source_Path="\\\\hungary\\dfsroot\\Maldi_eredmenyek\\Dorog kezi\\"
 _BUD_Source_Path="\\\\hungary\\dfsroot\\Maldi_eredmenyek\\Dorog kezi\\"
-'''
+
 
 def createLogFile():
     '''
@@ -128,5 +128,46 @@ def copyafile(sourcepath,fname,destpath,prefix):
     except: 
         print(destfname)
         msg("Exception return: "+" **** ERROR IN FILE COPY ****", tofile=_DebugToFile)        
+
+def copyallmanualfile():
+    _manual_dorog=_DOR_Source_Path
+    _manual_budapest=_BUD_Source_Path
+    _manual_debrecen=_DEB_Source_Path
     
+    dorog_list=listfiles(_manual_dorog)
+    budapest_list=listfiles(_manual_dorog)
+    debrecen_list=listfiles(_manual_dorog)
+    msg(tofile=_DebugToFile)
+    
+    # Dorogi manuális igények ellenőrzése és másolása
+    
+    if len(dorog_list)>0:
+        for filename in dorog_list:
+            msg("Dorogi manuális igény másolása: "+filename, tofile=_DebugToFile)
+            dest=_MaldiInput
+            copyafile(_manual_dorog,filename,dest,"")
+    else:
+        msg("Nincs dorogi manuális igény:", tofile=_DebugToFile) 
+
+    # Budapesti manuális igények ellenőrzése és másolása
+    
+    if len(budapest_list)>0:
+        for filename in budapest_list:
+            msg("Budapesti manuális igény másolása: "+filename, tofile=_DebugToFile)
+            dest=_MaldiInput
+            copyafile(_manual_budapest,filename,dest,"")
+    else:
+        msg("Nincs budapesti manuális igény:", tofile=_DebugToFile) 
+
+    # Debreceni manuális igények ellenőrzése és másolása
+    
+    if len(debrecen_list)>0:
+        for filename in debrecen_list:
+            msg("Debreceni manuális igény másolása: "+filename, tofile=_DebugToFile)
+            dest=_MaldiInput
+            copyafile(_manual_debrecen,filename,dest,"")
+    else:
+        msg("Nincs debreceni manuális igény:", tofile=_DebugToFile) 
+
+
 
