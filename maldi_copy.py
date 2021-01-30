@@ -10,14 +10,14 @@ _swname = "MALDI_COPY"
 
 
 
-_MaldiInput="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\PRD"
+_MaldiInput="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\PRD\\"
 
-_Logdirectory="/log"
-_Basedirectory="C:\\maldi_copy"
+_Logdirectory="\\log"
+_Basedirectory="C:\\maldi_copy\\"
 _UsedPlateFile="plates.dat"
 _DebugToFile=True
 _logprefix = _Basedirectory+_Logdirectory
-_usedplatelist=_Basedirectory+"\\"+_UsedPlateFile    # egy fájlra mutat ami csv-ként tartalmazza a plateID és fióktelep összerendeléseket
+_usedplatelist=_Basedirectory+_UsedPlateFile    # egy fájlra mutat ami csv-ként tartalmazza a plateID és fióktelep összerendeléseket
 
 _DOR_prefix="DOR"
 _DEB_prefix="DEB"
@@ -29,9 +29,9 @@ _BUDNAME="BUDAPEST"
 
 
 
-_DOR_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Dorog_kezi"
-_DEB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Debrecen_kezi"
-_BUD_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Budapest_kezi"
+_DOR_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Dorog_kezi\\"
+_DEB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Debrecen_kezi\\"
+_BUD_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Budapest_kezi\\"
 
 sites=(_DORNAME,_DEBNAME,_BUDNAME)
 
@@ -120,8 +120,8 @@ def copyafile(sourcepath,fname,destpath,prefix):
     sourcepath könyvtárból fname file-t dest könyvtárba másolja prefix-et tesz a fname elejére 
     '''
     msg(tofile=_DebugToFile)
-    sourcefname=sourcepath+"\\"+fname
-    destfname=destpath+"\\"+prefix+fname
+    sourcefname=sourcepath+fname
+    destfname=destpath+prefix+fname
     print(sourcefname,destfname)
     try:
         shutil.copyfile(sourcefname,destfname)
@@ -170,6 +170,8 @@ def loadplates():
     f2=dict(f)
     return(f2) 
 
+
+
 def checkfile(fname):
     '''
     fname ellenőrzése
@@ -177,7 +179,7 @@ def checkfile(fname):
         plateID létezik, és helyes?
     return: True, ha minden OK
     '''
-    
+    print("*** file name:",fname)
     # .csv file érkezett?
     o=True
     if fname[-4:].upper() != ".CSV":
@@ -186,7 +188,6 @@ def checkfile(fname):
     # plate id korrekt?
     # megnézük hogy a file nevében szerepel-e a site és szerepel e a sitehoz rendelt plateid
     #
-    plates=loadplates()
     foundamatch=False
     for key in plates :
         print(fname, key,plates[key])
@@ -221,7 +222,7 @@ def copyallmanualfile():
     # Dorogi manuális igények ellenőrzése és másolása
     if len(dorog_list)>0:
         for filename in dorog_list:
-            if checkfile(filename):     # ellenőrizzük a fált
+            if checkfile(_manual_dorog+filename):     # ellenőrizzük a fált
                 msg("Dorogi manuális igény másolása: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
                 copyafile(_manual_dorog,filename,dest,"")
@@ -234,7 +235,7 @@ def copyallmanualfile():
     # Budapesti manuális igények ellenőrzése és másolása
     if len(budapest_list)>0:
         for filename in budapest_list:
-            if checkfile(filename):     # ellenőrizzük a fált
+            if checkfile(_manual_budapest+filename):     # ellenőrizzük a fált
                 msg("Budapesti manuális igény másolása: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
                 copyafile(_manual_budapest,filename,dest,"")
@@ -247,7 +248,7 @@ def copyallmanualfile():
     # Debreceni manuális igények ellenőrzése és másolása
     if len(debrecen_list)>0:
         for filename in debrecen_list:
-            if checkfile(filename):     # ellenőrizzük a fált
+            if checkfile(_manual_debrecen+filename):     # ellenőrizzük a fált
                 msg("Debreceni manuális igény másolása: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
                 copyafile(_manual_debrecen,filename,dest,"")
@@ -260,9 +261,8 @@ def copyallmanualfile():
 # main
 
 
-
+plates=loadplates()
+    
 copyallmanualfile()
-ff=loadplates()
-print(ff)
-filess="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Dorog_kezi\\11111.csv"
-checkfile(filess)
+
+
