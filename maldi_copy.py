@@ -6,7 +6,7 @@ import re
 # path definition
 
 _logext = ".log"
-_swname = "MALDI_COPY"
+_swname = "MALDI_COPY_"
 
 
 
@@ -122,12 +122,12 @@ def copyafile(sourcepath,fname,destpath,prefix):
     msg(tofile=_DebugToFile)
     sourcefname=sourcepath+fname
     destfname=destpath+prefix+fname
-    print(sourcefname,destfname)
+    # print(sourcefname,destfname)  # DEBUG print
     try:
         shutil.copyfile(sourcefname,destfname)
         msg("File copy: "+sourcefname+"-->"+destfname, tofile=_DebugToFile)    
     except: 
-        print(destfname)
+        print(destfname)  # DEBUG print
         msg("Exception return: "+" **** ERROR IN FILE COPY ****", tofile=_DebugToFile)        
 
 
@@ -179,7 +179,7 @@ def checkfile(fname):
         plateID létezik, és helyes?
     return: True, ha minden OK
     '''
-    print("*** file name:",fname)
+    # print("*** file name:",fname)
     # .csv file érkezett?
     o=True
     if fname[-4:].upper() != ".CSV":
@@ -190,10 +190,10 @@ def checkfile(fname):
     #
     foundamatch=False
     for key in plates :
-        print(fname, key,plates[key])
+        # print(fname, key,plates[key])   # DEBUG PRINT
         if (key in fname) and (plates[key] in fname ):
             foundamatch=True
-            print("BINGÓ")
+            
     if not(foundamatch):
         return(False)
     
