@@ -3,6 +3,11 @@ import shutil
 import datetime as dt
 import re
 
+# ---------------------------
+# Sipőcz László 2020. 01. 30.
+# ---------------------------
+
+
 # path definition
 
 _logext = ".log"
@@ -19,9 +24,6 @@ _DebugToFile=True
 _logprefix = _Basedirectory+_Logdirectory
 _usedplatelist=_Basedirectory+_UsedPlateFile    # egy fájlra mutat ami csv-ként tartalmazza a plateID és fióktelep összerendeléseket
 
-_DOR_prefix="DOR"
-_DEB_prefix="DEB"
-_BUD_prefix="BUD"
 
 _DORNAME="DOROG"
 _DEBNAME="DEBRECEN"
@@ -177,6 +179,7 @@ def checkfile(fname):
     fname ellenőrzése
         .csv?
         plateID létezik, és helyes?
+        ID-val kezdődik?
     return: True, ha minden OK
     '''
     # print("*** file name:",fname)
@@ -197,10 +200,14 @@ def checkfile(fname):
     if not(foundamatch):
         return(False)
     
+    # ID-val nem kezdődhet.
+    if fname[0:1].upper()=="ID":
+        return(False)
+
     # fenntartva egyéb pl. belső szintaktikai ellenőrzések számára
-    # 
-    if True:
-        pass
+    if False:
+        return(False)
+
 
     # ha nem léptünk ki hibával akkor kilépünk True-val
     return(True)
