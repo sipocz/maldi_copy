@@ -28,13 +28,14 @@ _usedplatelist=_Basedirectory+_UsedPlateFile    # egy fájlra mutat ami csv-kén
 _DORNAME="DOROG"
 _DEBNAME="DEBRECEN"
 _BUDNAME="BUDAPEST"
+_MIMOLABNAME="MIMOLAB"
 
 
 
 _DOR_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Dorog_kezi\\"
 _DEB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Debrecen_kezi\\"
 _BUD_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Budapest_kezi\\"
-
+_MIMOLAB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\MIMOLAB\\"
 sites=(_DORNAME,_DEBNAME,_BUDNAME)
 
 
@@ -200,8 +201,8 @@ def checkfile(fname):
     if not(foundamatch):
         return(False)
     
-    # ID-val nem kezdődhet.
-    if fname[0:1].upper()=="ID":
+    # ID-val nem kezdődhetne de a mimolab úgy adja. Hibás ha nem ID-val kezdődik és nem számmal
+    if fname[0:1].upper()!="ID" and not(fname[0:1].upper().isnumeric()):
         return(False)
 
     # fenntartva egyéb pl. belső szintaktikai ellenőrzések számára
@@ -219,11 +220,26 @@ def copyallmanualfile():
     _manual_dorog=_DOR_Source_Path
     _manual_budapest=_BUD_Source_Path
     _manual_debrecen=_DEB_Source_Path
-    
+    _mimolab=_MIMOLAB_Source_Path
     dorog_list=listfiles(_manual_dorog)
     budapest_list=listfiles(_manual_budapest)
     debrecen_list=listfiles(_manual_debrecen)
+    mimolab_list=listfiles(_mimolab)
+    
     msg(tofile=_DebugToFile)
+
+    # MIMOLAB igények ellenőrzése és másolása
+    if len(mimolab_list)>0:
+        for filename in mimolab_list:
+            if checkfile(_mimolab+filename):     # ellenőrizzük a fált
+                msg("Mimolab igény másolása: "+filename, tofile=_DebugToFile)
+                dest=_MaldiInput
+                copyafile(_mimolab,filename,dest,"")
+            else:                       #nem sikeres az ellenőrzés 
+                msg("Mimolab manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
+    else:
+        msg("Nincs mimolab igény:", tofile=_DebugToFile) 
+
 
 
     # Dorogi manuális igények ellenőrzése és másolása
@@ -234,7 +250,7 @@ def copyallmanualfile():
                 dest=_MaldiInput
                 copyafile(_manual_dorog,filename,dest,"")
             else:                       #nem sikeres az ellenőrzés 
-                msg("Dorogi manuális igény fájl nem megfelelő: "+filename, tofile=_DebugToFile)
+                msg("Dorogi manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
         msg("Nincs dorogi manuális igény:", tofile=_DebugToFile) 
 
@@ -247,7 +263,7 @@ def copyallmanualfile():
                 dest=_MaldiInput
                 copyafile(_manual_budapest,filename,dest,"")
             else:                        #nem sikeres az ellenőrzés 
-                msg("Budapesti manuális igény fájl nem megfelelő: "+filename, tofile=_DebugToFile)
+                msg("Budapesti manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
         msg("Nincs budapesti manuális igény:", tofile=_DebugToFile) 
 
@@ -263,6 +279,22 @@ def copyallmanualfile():
                 msg("Debreceni manuális igény fájl nem megfelelő: "+filename, tofile=_DebugToFile)
     else:
         msg("Nincs debreceni manuális igény:", tofile=_DebugToFile) 
+
+
+    # Debreceni manuális igények ellenőrzése és másolása
+    if len(debrecen_list)>0:
+        for filename in debrecen_list:
+            if checkfile(_manual_debrecen+filename):     # ellenőrizzük a fált
+                msg("Debreceni manuális igény másolása: "+filename, tofile=_DebugToFile)
+                dest=_MaldiInput
+                copyafile(_manual_debrecen,filename,dest,"")
+            else:                        #nem sikeres az ellenőrzés 
+                msg("Debreceni manuális igény fájl nem megfelelő: "+filename, tofile=_DebugToFile)
+    else:
+        msg("Nincs debreceni manuális igény:", tofile=_DebugToFile) 
+
+
+
 
 
 # main
