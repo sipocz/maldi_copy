@@ -36,7 +36,11 @@ _DOR_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Dorog_kezi\\"
 _DEB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Debrecen_kezi\\"
 _BUD_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Budapest_kezi\\"
 _MIMOLAB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\MIMOLAB\\"
-sites=(_DORNAME,_DEBNAME,_BUDNAME)
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+sites=(_DORNAME,_DEBNAME,_BUDNAME,_MIMOLABNAME)
 
 
 def createLogFile():
@@ -54,7 +58,7 @@ def createLogFile():
     if ospath.exists(fname):
        pass
     else:
-        fileLog = open(fname, "x")
+        fileLog = open(fname, "x",encoding="Latin-1")
         fileLog.close()
         msg(tofile=_DebugToFile)
         msg("created",tofile=_DebugToFile)
@@ -130,7 +134,7 @@ def copyafile(sourcepath,fname,destpath,prefix):
         shutil.copyfile(sourcefname,destfname)
         msg("File copy: "+sourcefname+"-->"+destfname, tofile=_DebugToFile)    
     except: 
-        print(destfname)  # DEBUG print
+        #print(destfname)  # DEBUG print
         msg("Exception return: "+" **** ERROR IN FILE COPY ****", tofile=_DebugToFile)        
 
 
@@ -175,7 +179,7 @@ def loadplates():
 
 
 
-def checkfile(fname):
+def checkfile(fname, SkipThis=False ):
     '''
     fname ellenőrzése
         .csv?
@@ -193,17 +197,16 @@ def checkfile(fname):
     # megnézük hogy a file nevében szerepel-e a site és szerepel e a sitehoz rendelt plateid
     #
     foundamatch=False
+    
     for key in plates :
         # print(fname, key,plates[key])   # DEBUG PRINT
         if (key in fname) and (plates[key] in fname ):
             foundamatch=True
-            
+    foundamatch=foundamatch or SkipThis        
     if not(foundamatch):
         return(False)
     
-    # ID-val nem kezdődhetne de a mimolab úgy adja. Hibás ha nem ID-val kezdődik és nem számmal
-    if fname[0:1].upper()!="ID" and not(fname[0:1].upper().isnumeric()):
-        return(False)
+    
 
     # fenntartva egyéb pl. belső szintaktikai ellenőrzések számára
     if False:
@@ -225,13 +228,16 @@ def copyallmanualfile():
     budapest_list=listfiles(_manual_budapest)
     debrecen_list=listfiles(_manual_debrecen)
     mimolab_list=listfiles(_mimolab)
+    #print(_mimolab) # debug print
+    #print(debrecen_list) # debug print
     
+    #print(mimolab_list) # debug print
     msg(tofile=_DebugToFile)
 
     # MIMOLAB igények ellenőrzése és másolása
     if len(mimolab_list)>0:
         for filename in mimolab_list:
-            if checkfile(_mimolab+filename):     # ellenőrizzük a fált
+            if checkfile(_mimolab+filename, SkipThis=True):     # ellenőrizzük a fált
                 msg("Mimolab igény másolása: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
                 copyafile(_mimolab,filename,dest,"")
@@ -276,7 +282,7 @@ def copyallmanualfile():
                 dest=_MaldiInput
                 copyafile(_manual_debrecen,filename,dest,"")
             else:                        #nem sikeres az ellenőrzés 
-                msg("Debreceni manuális igény fájl nem megfelelő: "+filename, tofile=_DebugToFile)
+                msg("Debreceni manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
         msg("Nincs debreceni manuális igény:", tofile=_DebugToFile) 
 
@@ -289,7 +295,7 @@ def copyallmanualfile():
                 dest=_MaldiInput
                 copyafile(_manual_debrecen,filename,dest,"")
             else:                        #nem sikeres az ellenőrzés 
-                msg("Debreceni manuális igény fájl nem megfelelő: "+filename, tofile=_DebugToFile)
+                msg("Debreceni manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
         msg("Nincs debreceni manuális igény:", tofile=_DebugToFile) 
 
