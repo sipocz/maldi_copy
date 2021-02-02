@@ -4,7 +4,7 @@ import datetime as dt
 import re
 
 # ---------------------------
-# Sipőcz László 2020. 01. 30.
+# Sipőcz László 2021. 01. 30.
 # ---------------------------
 
 
@@ -172,11 +172,11 @@ def loadCSVfile(fname):
     csvfile.close()
     return (l1)
 
+
 def loadplates():
     f=loadCSVfile(_usedplatelist)
     f2=dict(f)
     return(f2) 
-
 
 
 def checkfile(fname, SkipThis=False ):
