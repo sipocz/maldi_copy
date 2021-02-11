@@ -3,16 +3,26 @@ import shutil
 import datetime as dt
 import re
 
-# ---------------------------
-# Sipőcz László 2021. 01. 30.
-# ---------------------------
+# +----------------------------------------
+# |  Maldi_Copy  
+# | 
+# |  Sipőcz László   
+# |  1.0: 2021.01.30. MaldiCopy
+# |         Maldi mérési igények MIMOLAB inport könyvtárba másolása
+# |  
+# |  2.0: 2020.02.10.  (Validált verzió) 
+# |         A siteokról MOVE kell, Mimolab esetén COPY  
+# |           
+# +----------------------------------------
+
+
 
 
 # path definition
 
 _logext = ".log"
 _swname = "MALDI_COPY_"
-_status="DEV"
+_status="DEV"  #  <---  Progrem fejlesztési státus
 
 
 _MaldiInput="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\\MALDI_INPUT\\"
@@ -136,6 +146,24 @@ def copyafile(sourcepath,fname,destpath,prefix):
         #print(destfname)  # DEBUG print
         msg("Exception return: "+" **** ERROR IN FILE COPY ****", tofile=_DebugToFile)        
 
+def moveafile(sourcepath,fname,destpath,prefix):
+    '''
+    sourcepath könyvtárból fname file-t dest könyvtárba másolja prefix-et tesz a fname elejére 
+    '''
+    msg(tofile=_DebugToFile)
+    sourcefname=sourcepath+fname
+    destfname=destpath+prefix+fname
+    # print(sourcefname,destfname)  # DEBUG print
+    try:
+        shutil.move(sourcefname,destfname)
+        msg("File MOVE: "+sourcefname+"-->"+destfname, tofile=_DebugToFile)    
+    except: 
+        #print(destfname)  # DEBUG print
+        msg("File MOVE HIBA "+sourcefname+"-->"+destfname, tofile=_DebugToFile)        
+
+
+
+
 
 
 def parseCSV(str):
@@ -198,12 +226,6 @@ def checkfile(fname, SkipThis=False ):
     if "RESULT" in fname.upper() :
         return(False)
 
-    # meg kell nézni, hogy a result file ott van e könyvtárban Ez csak a MIMOLAB esetében lehet,
-    # ebbne az esetben nem kell másolni a forrás csv-t mert már fel van dolgozva
-    if False:
-        return(False) 
-
-
     # plate id korrekt?
     # megnézük hogy a file nevében szerepel-e a site és szerepel e a sitehoz rendelt plateid
     #
@@ -216,10 +238,6 @@ def checkfile(fname, SkipThis=False ):
     foundamatch=foundamatch or SkipThis        
     if not(foundamatch):
         return(False)
-    
-    
-
-
 
     # fenntartva egyéb pl. belső szintaktikai ellenőrzések számára
     if False:
@@ -245,6 +263,8 @@ def minimize_list(lista):
         if not found:
             olist.append(elem1)
     return(olist)
+
+
 
 
 
@@ -289,9 +309,9 @@ def copyallmanualfile():
     if len(dorog_list)>0:
         for filename in dorog_list:
             if checkfile(_manual_dorog+filename):     # ellenőrizzük a fált
-                msg("Dorogi manuális igény másolása: "+filename, tofile=_DebugToFile)
+                msg("Dorogi manuális igény MOVE: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
-                copyafile(_manual_dorog,filename,dest,"")
+                moveafile(_manual_dorog,filename,dest,"")
             else:                       #nem sikeres az ellenőrzés 
                 msg("Dorogi manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
@@ -302,9 +322,9 @@ def copyallmanualfile():
     if len(budapest_list)>0:
         for filename in budapest_list:
             if checkfile(_manual_budapest+filename):     # ellenőrizzük a fált
-                msg("Budapesti manuális igény másolása: "+filename, tofile=_DebugToFile)
+                msg("Budapesti manuális igény MOVE: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
-                copyafile(_manual_budapest,filename,dest,"")
+                moveafile(_manual_budapest,filename,dest,"")
             else:                        #nem sikeres az ellenőrzés 
                 msg("Budapesti manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
@@ -317,20 +337,7 @@ def copyallmanualfile():
             if checkfile(_manual_debrecen+filename):     # ellenőrizzük a fált
                 msg("Debreceni manuális igény másolása: "+filename, tofile=_DebugToFile)
                 dest=_MaldiInput
-                copyafile(_manual_debrecen,filename,dest,"")
-            else:                        #nem sikeres az ellenőrzés 
-                msg("Debreceni manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
-    else:
-        msg("Nincs debreceni manuális igény:", tofile=_DebugToFile) 
-
-
-    # Debreceni manuális igények ellenőrzése és másolása
-    if len(debrecen_list)>0:
-        for filename in debrecen_list:
-            if checkfile(_manual_debrecen+filename):     # ellenőrizzük a fált
-                msg("Debreceni manuális igény másolása: "+filename, tofile=_DebugToFile)
-                dest=_MaldiInput
-                copyafile(_manual_debrecen,filename,dest,"")
+                moveafile(_manual_debrecen,filename,dest,"")
             else:                        #nem sikeres az ellenőrzés 
                 msg("Debreceni manuális igény fájl hiba: "+filename, tofile=_DebugToFile)
     else:
@@ -342,7 +349,9 @@ def copyallmanualfile():
 
 # main
 
-
+msg("Mimolab_COPY START", tofile=_DebugToFile)
 plates=loadplates()
     
 copyallmanualfile()
+
+msg("Mimolab_COPY END", tofile=_DebugToFile)
