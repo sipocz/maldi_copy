@@ -22,7 +22,7 @@ import re
 
 _logext = ".log"
 _swname = "MALDI_COPY_"
-_status="DEV"  #  <---  Progrem fejlesztési státus
+_status="DEV"  #  <---  Program fejlesztési státus
 
 
 _MaldiInput="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\\MALDI_INPUT\\"
