@@ -12,13 +12,13 @@ import re
 
 _logext = ".log"
 _swname = "MALDI_COPY_"
+_status="DEV"
 
 
-
-_MaldiInput="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\PRD\\"
+_MaldiInput="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\\MALDI_INPUT\\"
 
 _Logdirectory="\\log"
-_Basedirectory="C:\\maldi_copy\\"
+_Basedirectory="C:\\Maldi\\Maldi2-master\\"
 _UsedPlateFile="plates.dat"
 _DebugToFile=True
 _logprefix = _Basedirectory+_Logdirectory
@@ -31,11 +31,10 @@ _BUDNAME="BUDAPEST"
 _MIMOLABNAME="MIMOLAB"
 
 
-
-_DOR_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Dorog_kezi\\"
-_DEB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Debrecen_kezi\\"
-_BUD_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\Budapest_kezi\\"
-_MIMOLAB_Source_Path="C:\\Hungary\\dfsroot\\maldi_eredmenyek\\MIMOLAB\\"
+_DOR_Source_Path="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\\Dorog\\"
+_DEB_Source_Path="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\\Debrecen\\"
+_BUD_Source_Path="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\\Budapest\\"
+_MIMOLAB_Source_Path="\\\\Hungary\\dfsroot\\maldi_eredmenyek\\"+_status+"\MIMOLAB\\"
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -172,11 +171,11 @@ def loadCSVfile(fname):
     csvfile.close()
     return (l1)
 
-
 def loadplates():
     f=loadCSVfile(_usedplatelist)
     f2=dict(f)
     return(f2) 
+
 
 
 def checkfile(fname, SkipThis=False ):
@@ -193,12 +192,24 @@ def checkfile(fname, SkipThis=False ):
     if fname[-4:].upper() != ".CSV":
         return(False)
     
+    
+    # RESULT fájllal van dolgunk?
+    # már lépünk is ki, azzal nem kell foglalkozni 
+    if "RESULT" in fname.upper() :
+        return(False)
+
+    # meg kell nézni, hogy a result file ott van e könyvtárban Ez csak a MIMOLAB esetében lehet,
+    # ebbne az esetben nem kell másolni a forrás csv-t mert már fel van dolgozva
+    if False:
+        return(False) 
+
+
     # plate id korrekt?
     # megnézük hogy a file nevében szerepel-e a site és szerepel e a sitehoz rendelt plateid
     #
     foundamatch=False
     
-    for key in plates :
+    for key in plates:
         # print(fname, key,plates[key])   # DEBUG PRINT
         if (key in fname) and (plates[key] in fname ):
             foundamatch=True
@@ -208,6 +219,8 @@ def checkfile(fname, SkipThis=False ):
     
     
 
+
+
     # fenntartva egyéb pl. belső szintaktikai ellenőrzések számára
     if False:
         return(False)
@@ -215,6 +228,26 @@ def checkfile(fname, SkipThis=False ):
 
     # ha nem léptünk ki hibával akkor kilépünk True-val
     return(True)
+
+
+def minimize_list(lista):
+    '''
+    a mimolab könyvtárába visszakerülnek a RESULT fájlok,
+    amit már lemértünk nem kell másolni
+    '''
+    olist=[]
+    for elem1 in lista:
+        found=False
+        for elem2 in lista:
+            if (elem1!=elem2) and (elem1 in elem2) or ("RESULT" in elem1.upper()):
+                found=True
+            print(elem1,elem2, found)
+        if not found:
+            olist.append(elem1)
+    return(olist)
+
+
+
 
 def copyallmanualfile():
     '''
@@ -228,6 +261,10 @@ def copyallmanualfile():
     budapest_list=listfiles(_manual_budapest)
     debrecen_list=listfiles(_manual_debrecen)
     mimolab_list=listfiles(_mimolab)
+
+    mimolab_list=minimize_list(mimolab_list)    # a momolab könyvtár együtt tartalmazza a input ss result fájlokat
+                                                # ahol mindkettő megvan nem kell átmásolni.
+
     #print(_mimolab) # debug print
     #print(debrecen_list) # debug print
     
@@ -309,5 +346,3 @@ def copyallmanualfile():
 plates=loadplates()
     
 copyallmanualfile()
-
-
